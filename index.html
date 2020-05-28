@@ -16,13 +16,20 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <h1>Testing</h1>
+    <h1>Conway's Game Of Life</h1>
+
+    <div>
+      <button id="start-btn">Start</button>
+      <button>Clear</button>
+    </div>
     
     <div>
       <canvas></canvas>
     </div>
 
-
-    <script src="index.js" async defer></script>
+    <script src="javascript/buildGrid.js" defer></script>
+    <script src="index.js" defer></script>
+    <script src="javascript/renderGrid.js" defer></script>
+    <script src="javascript/updateGrid.js" defer></script>
   </body>
 </html>
