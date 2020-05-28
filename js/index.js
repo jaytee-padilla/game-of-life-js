@@ -1,5 +1,4 @@
-// ***** after this code is able to run successfully, break project up into smaller pieces of logic so it's not all in this one file *****
-
+// dom stuff
 const canvas = document.querySelector('canvas');
 const context = canvas.getContext('2d');
 
@@ -13,26 +12,56 @@ canvas.height = 800;
 const columns = canvas.width / resolution;
 const rows = canvas.height / resolution;
 
+// used to track start/stop animation for the game
+let animationId;
+let isAnimating = false;
+let isPaused = false;
+// used to check if grid is currently empty
+let gridIsEmpty = true;
+
+// used to the current generation's grid layout when the game is paused
+let currentGen;
+// tracks the current generation of each cell evolution
+let genCounter = 0;
+
 // building the grid
 // ***** at the moment, the grid is randomly generated upon the page loading. Maybe connect this functionality to a button *****
 function buildGrid() {
+  gridIsEmpty = true;
+  isAnimating = false;
+
   // return a 2 dimensional array (an array of arrays)
-  // line 20 creates the first array whose values are all null (thanks to .fill(null))
-  // line 21 creates the second array whose values are all 0 (also thanks to the .fill() populating each value of the array)
-  // in other words, the first array creates the length of the grid,
-  // the .map() creates the inner array (hence 2 dimensional) for each element of Array(columns),
+  // the first array creates the length of the grid,
+  // the .map() creates the inner array (aka 2 dimensional) for each element of Array(columns),
   // the inner array's indexes are populated with whatever value is in .fill())
-  // the second .map() populates each cell with a random value of 0 or 1
+  return new Array(columns).fill(null)
+    .map(() => new Array(rows).fill(0));
+}
+
+function buildRandomGrid() {
+  gridIsEmpty = false;
+  isAnimating = true;
+
+  // works the same as buildGrid(), but instead of a blank grid full of all 0s, it build a randomly generated grid filled with values of either 0 or 1
   return new Array(columns).fill(null)
     .map(() => new Array(rows).fill(null)
       .map(() => Math.floor(Math.random() * 2)));
 }
 
-// update and render the grid each new generation
-function updateGrid() {
-  grid = nextGen(grid);
-  render(grid);
-  requestAnimationFrame(updateGrid);
+// render the grid to the canvas
+function render(grid) {
+  for (let col = 0; col < grid.length; col++) {
+    for (let row = 0; row < grid[col].length; row++) {
+      const cell = grid[col][row];
+
+      context.beginPath();
+      // x position, y position, width, height of rectangle
+      context.rect(col * resolution, row * resolution, resolution, resolution);
+      context.fillStyle = cell ? 'black' : 'white';
+      context.fill();
+      context.stroke();
+    }
+  }
 }
 
 function nextGen(grid) {
@@ -107,23 +136,42 @@ function nextGen(grid) {
   return nextGen;
 }
 
-// render the grid to the canvas
-function render(grid) {
-  for (let col = 0; col < grid.length; col++) {
-    for (let row = 0; row < grid[col].length; row++) {
-      const cell = grid[col][row];
+// update and render the grid each new generation
+function updateGrid() {
+  isPaused = false;
+  genCounter++;
+  document.getElementById('gen-counter').innerHTML = genCounter;
+  grid = nextGen(grid);
+  render(grid);
+  animationId = requestAnimationFrame(updateGrid);
+}
 
-      context.beginPath();
-      // x position, y position, width, height of rectangle
-      context.rect(col * resolution, row * resolution, resolution, resolution);
-      context.fillStyle = cell ? 'black' : 'white';
-      context.fill();
-      context.stroke();
-    }
+// stop game of life from continuing
+function stopUpdate() {
+  isPaused = true;
+  isAnimating = false;
+
+  currentGen = grid.map(arr => [...arr]);
+
+  cancelAnimationFrame(animationId);
+
+  if (!isPaused) {
+    genCounter = 0;
   }
 }
 
-// initialize grid upon page loading
-let grid = buildGrid();
+// clear the grid
+function clearGrid() {
+  gridIsEmpty = true;
+  isAnimating = false;
 
-requestAnimationFrame(updateGrid);
+  grid = buildGrid();
+  render(grid);
+  genCounter = 0;
+  document.getElementById('gen-counter').innerHTML = genCounter;
+}
+
+// When the page loads, render a blank grid
+// ***** will add the ability for user to click the cells to create their own grid *****
+let grid = buildGrid();
+render(grid);
