@@ -28,6 +28,13 @@ function buildGrid() {
       .map(() => Math.floor(Math.random() * 2)));
 }
 
+// update and render the grid each new generation
+function updateGrid() {
+  grid = nextGen(grid);
+  render(grid);
+  requestAnimationFrame(updateGrid);
+}
+
 function nextGen(grid) {
   // map through each inner array of the outer array
   // create a copy of each inner array
@@ -37,7 +44,7 @@ function nextGen(grid) {
 
   for (let col = 0; col < grid.length; col++) {
     for (let row = 0; row < grid[col].length; row++) {
-      const cell = grid[row][col];
+      const cell = grid[col][row];
       let numNeighbors = 0;
 
       // look at the current cells neighbors
@@ -60,6 +67,7 @@ function nextGen(grid) {
       // e.g. [][][]
       //      [o][x][]
       //      [][][]
+      // i represents the Y coordinate, j represent the X coordinate
       for (let i = -1; i < 2; i++) {
         for (let j = -1; j < 2; j++) {
           // if the current neighbor cell's coordinates are the same as cell, skip over that cell since we're only interested in its neighbors
@@ -103,7 +111,7 @@ function nextGen(grid) {
 function render(grid) {
   for (let col = 0; col < grid.length; col++) {
     for (let row = 0; row < grid[col].length; row++) {
-      const cell = grid[row][col];
+      const cell = grid[col][row];
 
       context.beginPath();
       // x position, y position, width, height of rectangle
@@ -119,12 +127,3 @@ function render(grid) {
 let grid = buildGrid();
 
 requestAnimationFrame(updateGrid);
-
-// update and render the grid each new generation
-function updateGrid() {
-  grid = nextGen(grid);
-  render(grid);
-  requestAnimationFrame(updateGrid);
-}
-
-// console.table(grid)
