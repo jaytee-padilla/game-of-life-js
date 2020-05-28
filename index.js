@@ -14,6 +14,7 @@ const columns = canvas.width / resolution;
 const rows = canvas.height / resolution;
 
 // building the grid
+// ***** at the moment, the grid is randomly generated upon the page loading. Maybe connect this functionality to a button *****
 function buildGrid() {
   // return a 2 dimensional array (an array of arrays)
   // line 20 creates the first array whose values are all null (thanks to .fill(null))
@@ -21,8 +22,10 @@ function buildGrid() {
   // in other words, the first array creates the length of the grid,
   // the .map() creates the inner array (hence 2 dimensional) for each element of Array(columns),
   // the inner array's indexes are populated with whatever value is in .fill())
+  // the second .map() populates each cell with a random value of 0 or 1
   return new Array(columns).fill(null)
-    .map(() => new Array(rows).fill(0))
+    .map(() => new Array(rows).fill(null)
+      .map(() => Math.floor(Math.random() * 2)));
 }
 
 // render the grid to the canvas
@@ -30,11 +33,12 @@ function render(grid) {
   for (let col = 0; col < grid.length; col++) {
     for (let row = 0; row < grid[col].length; row++) {
       const cell = grid[row][col];
-      // console.log(`row ${row} ${grid[col]}`)
 
       context.beginPath();
       // x position, y position, width, height of rectangle
       context.rect(col * resolution, row * resolution, resolution, resolution);
+      context.fillStyle = cell ? 'black' : 'white';
+      context.fill();
       context.stroke();
     }
   }
