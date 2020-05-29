@@ -1,4 +1,7 @@
 function startGame() {
+  cellColorEle.setAttribute('disabled', true);
+  gridSizeEle.setAttribute('disabled', true);
+
   if (gridIsEmpty) {
     grid = buildRandomGrid();
     updateGrid();
@@ -41,6 +44,9 @@ function stopUpdate() {
 
 // clear the grid
 function clearGrid() {
+  cellColorEle.removeAttribute('disabled', true);
+  gridSizeEle.removeAttribute('disabled', true);
+
   gridIsEmpty = true;
   isAnimating = false;
 
