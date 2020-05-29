@@ -178,5 +178,3 @@ function buildInteractiveGrid(grid) {
 let grid = buildGrid();
 buildInteractiveGrid(grid);
 render(grid);
-
-// testing 1 2 3
