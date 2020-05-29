@@ -9,18 +9,7 @@ const clearBtn = document.querySelector('#clear-btn');
 // EVENT LISTENERS
 // when the user clicks start, run the game of life
 startBtn.addEventListener('click', () => {
-  if (gridIsEmpty) {
-    grid = buildRandomGrid();
-    updateGrid();
-  } else if (isPaused) {
-    grid = currentGen;
-    updateGrid();
-  } else {
-    stopUpdate();
-    clearGrid();
-    grid = buildRandomGrid();
-    updateGrid();
-  }
+  startGame();
 });
 
 // pauses the current generation

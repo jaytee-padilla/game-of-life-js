@@ -5,8 +5,8 @@ const context = canvas.getContext('2d');
 // canvas parameters
 // (will probably turn these currently hard-coded values into inputs later so the size of the canvas can be changed via a selection of set sizes that the user can select)
 const resolution = 10;
-canvas.width = 800;
-canvas.height = 800;
+canvas.width = 400;
+canvas.height = 400;
 
 // building the columns and rows
 const columns = canvas.width / resolution;
@@ -55,9 +55,10 @@ function render(grid) {
       const cell = grid[col][row];
 
       context.beginPath();
+      // each cell is created and rendered to the screen, forming a grid
       // x position, y position, width, height of rectangle
       context.rect(col * resolution, row * resolution, resolution, resolution);
-      context.fillStyle = cell ? 'black' : 'white';
+      context.fillStyle = cell ? 'black' : 'white'; // the value of cell is either truthy or falsey (1 or 0)
       context.fill();
       context.stroke();
     }
@@ -136,42 +137,44 @@ function nextGen(grid) {
   return nextGen;
 }
 
-// update and render the grid each new generation
-function updateGrid() {
-  isPaused = false;
-  genCounter++;
-  document.getElementById('gen-counter').innerHTML = genCounter;
-  grid = nextGen(grid);
-  render(grid);
-  animationId = requestAnimationFrame(updateGrid);
-}
+function buildInteractiveGrid(grid) {
+  // for (let col = 0; col < grid.length; col++) {
+  //   for (let row = 0; row < grid[col].length; row++) {
+  //     const cell = grid[col][row];
 
-// stop game of life from continuing
-function stopUpdate() {
-  isPaused = true;
-  isAnimating = false;
+  //     context.beginPath();
+  //     // x position, y position, width, height of rectangle
+  //     context.rect(col * resolution, row * resolution, resolution, resolution);
+  //     context.fillStyle = cell ? 'black' : 'white';
+  //     context.fill();
+  //     context.stroke();
+  //   }
+  // }
 
-  currentGen = grid.map(arr => [...arr]);
-
-  cancelAnimationFrame(animationId);
-
-  if (!isPaused) {
-    genCounter = 0;
+  function getCursorPos(canvas, event) {
+    const rect = canvas.getBoundingClientRect()
+    let x = event.clientX - rect.left
+    let y = event.clientY - rect.top
+    if (x < 0) {
+      x = 0;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+    console.log("x: " + x + " y: " + Math.floor(y))
   }
-}
 
-// clear the grid
-function clearGrid() {
-  gridIsEmpty = true;
-  isAnimating = false;
+  const canvas = document.querySelector('canvas')
 
-  grid = buildGrid();
-  render(grid);
-  genCounter = 0;
-  document.getElementById('gen-counter').innerHTML = genCounter;
+  canvas.addEventListener('click', (event) => {
+    // console.log(event.x, event.y);
+    // console.log(event)
+    getCursorPos(canvas, event)
+  });
 }
 
 // When the page loads, render a blank grid
 // ***** will add the ability for user to click the cells to create their own grid *****
 let grid = buildGrid();
+buildInteractiveGrid(grid);
 render(grid);
